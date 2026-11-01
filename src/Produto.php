@@ -35,7 +35,9 @@ class Produto
 
     public function read(): array
     {
-        $sql = 'select * from produtos';$produtos = [];
+        $sql = 'select * from produtos';
+        
+        $produtos = [];
 
         foreach($this->conn->query($sql) as $key => $value) {
             array_push($produtos, $value);
