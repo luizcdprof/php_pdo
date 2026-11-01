@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 class Produto
 {
+    /**
+     * Summary of conn
+     * @var PDO
+     */
     private $conn;
 
     public function __construct(){
@@ -15,57 +19,51 @@ class Produto
         }
     }
 
-    public function create(): int
+    public function create(string $descricao, int $qtd=0, float $valor=0.0): int
     {
         $sql = 'insert into produtos(descricao, qtd, valor) values(?, ?, ?)';
 
         $prepare = $this->conn->prepare($sql);
 
-        $prepare->bindParam(1, $_GET['descricao']);
-        $prepare->bindParam(2, $_GET['qtd']);
-        $prepare->bindParam(3, $_GET['valor']);
+        $prepare->bindParam(1, $descricao);
+        $prepare->bindParam(2, $qtd);
+        $prepare->bindParam(3, $valor);
         $prepare->execute();
 
         return $prepare->rowCount();
     }
 
-    public function read(): void
+    public function read(): array
     {
-        $sql = 'select * from produtos';
-
-        echo '<h3>Produtos:</h3>';
+        $sql = 'select * from produtos';$produtos = [];
 
         foreach($this->conn->query($sql) as $key => $value) {
-            echo 'ID: ' .
-                $value['id_produto'] .
-                '<br />Descrição: ' . $value['descricao'] .
-                '<br />Qtd: ' . $value['qtd'] .
-                '<br />Valor: R$ ' . $value['valor'] .
-                '<hr />'
-            ;
+            array_push($produtos, $value);
         }
+
+        return $produtos;
     }
 
-    public function update(): int
+    public function update(int $id_produto, string $descricao): int
     {
         $sql = 'update produtos set descricao = ? where id_produto = ?';
 
         $prepare = $this->conn->prepare($sql);
 
-        $prepare->bindParam(1, $_GET['descricao']);
-        $prepare->bindParam(2, $_GET['id_produto']);
+        $prepare->bindParam(1, $descricao);
+        $prepare->bindParam(2, $id_produto);
         $prepare->execute();
 
         return $prepare->rowCount();
     }
 
-    public function delete(): int
+    public function delete(int $id_produto): int
     {
         $sql = 'delete from produtos where id_produto = ?';
 
         $prepare = $this->conn->prepare($sql);
 
-        $prepare->bindParam(1, $_GET['id_produto']);
+        $prepare->bindParam(1, $id_produto);
         $prepare->execute();
 
         return $prepare->rowCount();
